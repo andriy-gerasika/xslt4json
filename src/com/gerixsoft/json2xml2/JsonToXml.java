@@ -110,8 +110,15 @@ public class JsonToXml {
 			case JSONParser.ARRAY:
 				handler.startElement("", "array", "array", new AttributesImpl());
 				break;
+			case JSONParser.ELEMENT:
+				handler.startElement("", "field", "field", new AttributesImpl());
+				break;
 			case JSONParser.STRING:
 				handler.startElement("", "string", "string", new AttributesImpl());
+				break;
+			case JSONParser.INTEGER:
+			case JSONParser.DOUBLE:
+				handler.startElement("", "number", "number", new AttributesImpl());
 				break;
 			default:
 				handler.processingInstruction("antlr", text);
@@ -137,8 +144,15 @@ public class JsonToXml {
 			case JSONParser.ARRAY:
 				handler.endElement("", "array", "array");
 				break;
+			case JSONParser.ELEMENT:
+				handler.endElement("", "field", "field");
+				break;
 			case JSONParser.STRING:
 				handler.endElement("", "string", "string");
+				break;
+			case JSONParser.INTEGER:
+			case JSONParser.DOUBLE:
+				handler.endElement("", "number", "number");
 				break;
 			default:
 				break;
