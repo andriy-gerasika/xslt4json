@@ -16,14 +16,18 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
+import org.antlr.runtime.tree.TreeVisitorAction;
 import org.xerial.json.impl.JSONLexer;
 import org.xerial.json.impl.JSONParser;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.AttributesImpl;
 
 public class JsonToXml {
 
@@ -41,7 +45,7 @@ public class JsonToXml {
 		JSONLexer lexer = new JSONLexer(stream);
 		TokenStream input = new CommonTokenStream(lexer);
 		JSONParser parser = new JSONParser(input);
-		CommonTree tree = (CommonTree) parser.json().getTree();
+		CommonTree tree = (CommonTree) parser.jsonObject().getTree();
 		
 		SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		TransformerHandler handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResource("json2xml.xsl").toString()));
@@ -50,8 +54,10 @@ public class JsonToXml {
 		handler.setResult(new StreamResult(xmlFile));
 		handler.startDocument();
 		try {
-			//TreeVisitor visitor = new TreeVisitor();
-			//visitor.visit(tree, new __TreeVisitorAction(handler));
+			handler.startElement("", "json", "json", new AttributesImpl());
+			TreeVisitor visitor = new TreeVisitor();
+			visitor.visit(tree, new __TreeVisitorAction(handler));
+			handler.endElement("", "json", "json");
 		} finally {
 			handler.endDocument();
 		}
@@ -83,4 +89,64 @@ public class JsonToXml {
 		validator.validate(new StreamSource(xmlFile));
 	}
 
+	private static final class __TreeVisitorAction implements TreeVisitorAction {
+		private ContentHandler handler;
+		
+		public __TreeVisitorAction(ContentHandler handler) {
+			this.handler = handler;
+		}
+
+		@Override
+		public Object pre(Object o) {
+			CommonTree tree = (CommonTree) o;
+			Token token = tree.getToken();
+			String text = token.getText();
+			int type = token.getType();
+			try {
+			switch (type) {
+			case JSONParser.OBJECT:
+				handler.startElement("", "object", "object", new AttributesImpl());
+				break;
+			case JSONParser.ARRAY:
+				handler.startElement("", "array", "array", new AttributesImpl());
+				break;
+			case JSONParser.STRING:
+				handler.startElement("", "string", "string", new AttributesImpl());
+				break;
+			default:
+				handler.processingInstruction("antlr", text);
+				break;
+			}
+			} catch(SAXException e) {
+				e.printStackTrace();
+			}
+			return o;
+		}
+
+		@Override
+		public Object post(Object o) {
+			CommonTree tree = (CommonTree) o;
+			Token token = tree.getToken();
+			String text = token.getText();
+			int type = token.getType();
+			try {
+			switch (type) {
+			case JSONParser.OBJECT:
+				handler.endElement("", "object", "object");
+				break;
+			case JSONParser.ARRAY:
+				handler.endElement("", "array", "array");
+				break;
+			case JSONParser.STRING:
+				handler.endElement("", "string", "string");
+				break;
+			default:
+				break;
+			}
+			} catch(SAXException e) {
+				e.printStackTrace();
+			}
+			return o;
+		}
+	}
 }
