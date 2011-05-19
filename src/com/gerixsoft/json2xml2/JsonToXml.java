@@ -2,6 +2,8 @@ package com.gerixsoft.json2xml2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -103,27 +105,12 @@ public class JsonToXml {
 			String text = token.getText();
 			int type = token.getType();
 			try {
-			switch (type) {
-			case JSONParser.OBJECT:
-				handler.startElement("", "object", "object", new AttributesImpl());
-				break;
-			case JSONParser.ARRAY:
-				handler.startElement("", "array", "array", new AttributesImpl());
-				break;
-			case JSONParser.ELEMENT:
-				handler.startElement("", "field", "field", new AttributesImpl());
-				break;
-			case JSONParser.STRING:
-				handler.startElement("", "string", "string", new AttributesImpl());
-				break;
-			case JSONParser.INTEGER:
-			case JSONParser.DOUBLE:
-				handler.startElement("", "number", "number", new AttributesImpl());
-				break;
-			default:
-				handler.processingInstruction("antlr", text);
-				break;
-			}
+				String rewrite = rewriteMap.get(type);
+				if (rewrite != null) {
+					handler.startElement("", rewrite, rewrite, new AttributesImpl());
+				} else {
+					handler.processingInstruction("antlr", text);
+				}
 			} catch(SAXException e) {
 				e.printStackTrace();
 			}
@@ -137,30 +124,26 @@ public class JsonToXml {
 			String text = token.getText();
 			int type = token.getType();
 			try {
-			switch (type) {
-			case JSONParser.OBJECT:
-				handler.endElement("", "object", "object");
-				break;
-			case JSONParser.ARRAY:
-				handler.endElement("", "array", "array");
-				break;
-			case JSONParser.ELEMENT:
-				handler.endElement("", "field", "field");
-				break;
-			case JSONParser.STRING:
-				handler.endElement("", "string", "string");
-				break;
-			case JSONParser.INTEGER:
-			case JSONParser.DOUBLE:
-				handler.endElement("", "number", "number");
-				break;
-			default:
-				break;
-			}
+				String rewrite = rewriteMap.get(type);
+				if (rewrite != null) {
+					handler.endElement("", rewrite, rewrite);
+				}
 			} catch(SAXException e) {
 				e.printStackTrace();
 			}
 			return o;
 		}
+		
+		private static final Map<Integer, String> rewriteMap = new HashMap<Integer, String>();
+		
+		static {
+			rewriteMap.put(JSONParser.OBJECT, "object");
+			rewriteMap.put(JSONParser.ARRAY, "array");
+			rewriteMap.put(JSONParser.ELEMENT, "element");
+			rewriteMap.put(JSONParser.STRING, "string");
+			rewriteMap.put(JSONParser.INTEGER, "number");
+			rewriteMap.put(JSONParser.DOUBLE, "number");
+		}
+		
 	}
 }
