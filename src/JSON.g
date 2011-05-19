@@ -96,6 +96,8 @@ Integer: Int;
 Double:  Int (Frac Exp? | Exp);
 
 // parser rules
+json: jsonObject | jsonArray;
+
 jsonObject
 	: object
 	;
