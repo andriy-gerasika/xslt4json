@@ -32,12 +32,7 @@ options
    
 tokens
 {
-	OBJECT;
-	ELEMENT;
-	ARRAY;
-	STRING;
-	INTEGER;
-	DOUBLE;
+	XML_ELEMENT;
 }
 
 @lexer::header
@@ -96,35 +91,30 @@ Integer: Int;
 Double:  Int (Frac Exp? | Exp);
 
 // parser rules
-jsonObject
-	: object
+json
+	: object | array
 	;
-	
-jsonArray
-	: array
-	;	
-
 
 object
 	: LBrace (objectElement (Comma objectElement)*)? RBrace
-	  -> ^(OBJECT objectElement*)
+	  -> ^(XML_ELEMENT["object"] objectElement*)
 	;
 	
 objectElement
 	: String Colon value
-	  -> ^(ELEMENT String value)
+	  -> ^(XML_ELEMENT["element"] String value)
 	;	
 	
 array
 	: LBracket value (Comma value)* RBracket
-	  -> ^(ARRAY value+)
+	  -> ^(XML_ELEMENT["array"] value+)
 	;
 
 	
 value
-	: String -> ^(STRING String)
-	| Integer -> ^(INTEGER Integer)
-	| Double -> ^(DOUBLE Double)
+	: String -> ^(XML_ELEMENT["string"] String)
+	| Integer -> ^(XML_ELEMENT["integer"] Integer)
+	| Double -> ^(XML_ELEMENT["double"] Double)
 	| object  
 	| array  
 	| TRUE   

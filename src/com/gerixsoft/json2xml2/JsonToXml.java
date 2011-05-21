@@ -47,7 +47,7 @@ public class JsonToXml {
 		JSONLexer lexer = new JSONLexer(stream);
 		TokenStream input = new CommonTokenStream(lexer);
 		JSONParser parser = new JSONParser(input);
-		CommonTree tree = (CommonTree) parser.jsonObject().getTree();
+		CommonTree tree = (CommonTree) parser.json().getTree();
 		
 		SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		TransformerHandler handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResource("json2xml.xsl").toString()));
@@ -105,9 +105,8 @@ public class JsonToXml {
 			String text = token.getText();
 			int type = token.getType();
 			try {
-				String rewrite = rewriteMap.get(type);
-				if (rewrite != null) {
-					handler.startElement("", rewrite, rewrite, new AttributesImpl());
+				if (type == JSONParser.XML_ELEMENT) {
+					handler.startElement("", text, text, new AttributesImpl());
 				} else {
 					handler.processingInstruction("antlr", text);
 				}
@@ -124,25 +123,14 @@ public class JsonToXml {
 			String text = token.getText();
 			int type = token.getType();
 			try {
-				String rewrite = rewriteMap.get(type);
-				if (rewrite != null) {
-					handler.endElement("", rewrite, rewrite);
+				if (type == JSONParser.XML_ELEMENT) {
+					handler.endElement("", text, text);
+				} else {
 				}
 			} catch(SAXException e) {
 				e.printStackTrace();
 			}
 			return o;
-		}
-		
-		private static final Map<Integer, String> rewriteMap = new HashMap<Integer, String>();
-		
-		static {
-			rewriteMap.put(JSONParser.OBJECT, "object");
-			rewriteMap.put(JSONParser.ARRAY, "array");
-			rewriteMap.put(JSONParser.ELEMENT, "element");
-			rewriteMap.put(JSONParser.STRING, "string");
-			rewriteMap.put(JSONParser.INTEGER, "integer");
-			rewriteMap.put(JSONParser.DOUBLE, "double");
 		}
 		
 	}
