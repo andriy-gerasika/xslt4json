@@ -141,8 +141,8 @@ public class JsonToXml {
 			rewriteMap.put(JSONParser.ARRAY, "array");
 			rewriteMap.put(JSONParser.ELEMENT, "element");
 			rewriteMap.put(JSONParser.STRING, "string");
-			rewriteMap.put(JSONParser.INTEGER, "number");
-			rewriteMap.put(JSONParser.DOUBLE, "number");
+			rewriteMap.put(JSONParser.INTEGER, "integer");
+			rewriteMap.put(JSONParser.DOUBLE, "double");
 		}
 		
 	}
