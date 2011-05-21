@@ -60,15 +60,7 @@ package org.xerial.json.impl;
 }
 
 // lexer rules
-Colon: ':';
-Comma: ',';
-LBrace: '{';
-RBrace: '}';
-LBracket: '[';
-RBracket: ']';
 fragment Dot: '.';
-TRUE:  'true';
-FALSE: 'false';
 NULL: 'null';
 
 fragment Digit: '0' .. '9';
@@ -89,24 +81,25 @@ WhiteSpace: (' ' | '\r' | '\t' | '\u000C' | '\n') { $channel=HIDDEN; };
 String: '"' StringChar* '"';
 Integer: Int;
 Double:  Int (Frac Exp? | Exp);
+Boolean: 'false' | 'true';
 
 // parser rules
 json
-	: object | array
+	: value -> ^(XML_ELEMENT["json"] value)
 	;
 
 object
-	: LBrace (objectElement (Comma objectElement)*)? RBrace
-	  -> ^(XML_ELEMENT["object"] objectElement*)
+	: '{' (element (',' element)*)? '}'
+	  -> ^(XML_ELEMENT["object"] element*)
 	;
 	
-objectElement
-	: String Colon value
+element
+	: String ':' value
 	  -> ^(XML_ELEMENT["element"] String value)
 	;	
 	
 array
-	: LBracket value (Comma value)* RBracket
+	: '[' value (',' value)* ']'
 	  -> ^(XML_ELEMENT["array"] value+)
 	;
 
@@ -115,10 +108,9 @@ value
 	: String -> ^(XML_ELEMENT["string"] String)
 	| Integer -> ^(XML_ELEMENT["integer"] Integer)
 	| Double -> ^(XML_ELEMENT["double"] Double)
+	| Boolean -> ^(XML_ELEMENT["boolean"] Boolean)
 	| object  
 	| array  
-	| TRUE   
-	| FALSE
 	| NULL
 	;
 

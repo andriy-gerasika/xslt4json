@@ -56,10 +56,8 @@ public class JsonToXml {
 		handler.setResult(new StreamResult(xmlFile));
 		handler.startDocument();
 		try {
-			handler.startElement("", "json", "json", new AttributesImpl());
 			TreeVisitor visitor = new TreeVisitor();
 			visitor.visit(tree, new __TreeVisitorAction(handler));
-			handler.endElement("", "json", "json");
 		} finally {
 			handler.endDocument();
 		}
@@ -105,10 +103,22 @@ public class JsonToXml {
 			String text = token.getText();
 			int type = token.getType();
 			try {
-				if (type == JSONParser.XML_ELEMENT) {
+				switch (type) {
+				case JSONParser.XML_ELEMENT:
 					handler.startElement("", text, text, new AttributesImpl());
-				} else {
+					break;
+				case JSONParser.NULL:
+				case JSONParser.Integer:
+				case JSONParser.Double:
+				case JSONParser.Boolean:
+					handler.characters(text.toCharArray(), 0, text.length());
+					break;
+				case JSONParser.String:
+					handler.characters(text.toCharArray(), 1, text.length() - 2);
+					break;
+				default:
 					handler.processingInstruction("antlr", text);
+					break;
 				}
 			} catch(SAXException e) {
 				e.printStackTrace();

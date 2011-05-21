@@ -8,4 +8,10 @@
 		</xsl:copy>
 	</xsl:template>
 
+	<xsl:template match="element/node()[1][name()='']">
+		<xsl:attribute name="name">
+			<xsl:value-of select="."/>
+		</xsl:attribute>
+	</xsl:template>
+	
 </xsl:stylesheet>
