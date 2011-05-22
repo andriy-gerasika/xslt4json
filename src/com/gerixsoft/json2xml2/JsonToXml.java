@@ -2,6 +2,7 @@ package com.gerixsoft.json2xml2;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -11,6 +12,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+
+import net.sf.joost.trax.TransformerFactoryImpl;
 
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
@@ -31,7 +34,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class JsonToXml {
 
-	public static void main(String[] args) throws IOException, RecognitionException, SAXException, TransformerConfigurationException {
+	public static void main(String[] args) throws IOException, RecognitionException, SAXException, TransformerConfigurationException, URISyntaxException {
 		if (args.length != 2) {
 			System.err.println("usage: <json-file> <xml-file>");
 			System.exit(-1);
@@ -45,10 +48,14 @@ public class JsonToXml {
 		JSONParser parser = new JSONParser(input);
 		CommonTree tree = (CommonTree) parser.json().getTree();
 
-		SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-		TransformerHandler handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResource("json2xml.xsl").toString()));
-		handler.getTransformer().setOutputProperty("omit-xml-declaration", "yes");
-		handler.getTransformer().setOutputProperty("indent", "yes");
+		TransformerHandler handler;
+		if (false) {
+			SAXTransformerFactory handlerFactory = new TransformerFactoryImpl();
+			handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResourceAsStream("json2xml.stx")));
+		} else {
+			SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+			handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResourceAsStream("json2xml.xsl")));
+		}
 		handler.setResult(new StreamResult(xmlFile));
 		handler.startDocument();
 		try {
@@ -80,23 +87,13 @@ public class JsonToXml {
 			Token token = tree.getToken();
 			String text = token.getText();
 			int type = token.getType();
+			String name = JSONParser.tokenNames[type];
 			try {
-				switch (type) {
-				case JSONParser.XML_ELEMENT:
+				if (name.equals(name.toUpperCase())) {
 					handler.startElement("", text, text, new AttributesImpl());
-					break;
-				case JSONParser.NULL:
-				case JSONParser.Integer:
-				case JSONParser.Double:
-				case JSONParser.Boolean:
+				} else {
+					//handler.processingInstruction("antlr", text);
 					handler.characters(text.toCharArray(), 0, text.length());
-					break;
-				case JSONParser.String:
-					handler.characters(text.toCharArray(), 1, text.length() - 2);
-					break;
-				default:
-					handler.processingInstruction("antlr", text);
-					break;
 				}
 			} catch (SAXException e) {
 				e.printStackTrace();
@@ -111,7 +108,8 @@ public class JsonToXml {
 			String text = token.getText();
 			int type = token.getType();
 			try {
-				if (type == JSONParser.XML_ELEMENT) {
+				String name = JSONParser.tokenNames[type];
+				if (name.equals(name.toUpperCase())) {
 					handler.endElement("", text, text);
 				} else {
 				}
