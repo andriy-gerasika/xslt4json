@@ -2,6 +2,7 @@ package com.gerixsoft.json2xml2;
 
 import java.io.File;
 import java.io.IOException;
+
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
@@ -43,7 +44,7 @@ public class JsonToXml {
 		TokenStream input = new CommonTokenStream(lexer);
 		JSONParser parser = new JSONParser(input);
 		CommonTree tree = (CommonTree) parser.json().getTree();
-		
+
 		SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		TransformerHandler handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResource("json2xml.xsl").toString()));
 		handler.getTransformer().setOutputProperty("omit-xml-declaration", "yes");
@@ -56,7 +57,7 @@ public class JsonToXml {
 		} finally {
 			handler.endDocument();
 		}
-		
+
 		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 		Schema schema = factory.newSchema(new StreamSource(JsonToXml.class.getResourceAsStream("json.xsd")));
 		Validator validator = schema.newValidator();
@@ -68,7 +69,7 @@ public class JsonToXml {
 
 	private static final class __TreeVisitorAction implements TreeVisitorAction {
 		private ContentHandler handler;
-		
+
 		public __TreeVisitorAction(ContentHandler handler) {
 			this.handler = handler;
 		}
@@ -97,7 +98,7 @@ public class JsonToXml {
 					handler.processingInstruction("antlr", text);
 					break;
 				}
-			} catch(SAXException e) {
+			} catch (SAXException e) {
 				e.printStackTrace();
 			}
 			return o;
@@ -114,12 +115,12 @@ public class JsonToXml {
 					handler.endElement("", text, text);
 				} else {
 				}
-			} catch(SAXException e) {
+			} catch (SAXException e) {
 				e.printStackTrace();
 			}
 			return o;
 		}
-		
+
 	}
 
 	private static final class __ErrorHandler implements ErrorHandler {
@@ -139,8 +140,7 @@ public class JsonToXml {
 		}
 
 		public void log(String type, SAXParseException exception) {
-			System.err.println(type + " at line: " + exception.getLineNumber() + " col:" + exception.getColumnNumber() + " message: "
-					+ exception.getMessage());
+			System.err.println(type + " at line: " + exception.getLineNumber() + " col:" + exception.getColumnNumber() + " message: " + exception.getMessage());
 		}
 	}
 
