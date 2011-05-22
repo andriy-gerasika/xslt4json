@@ -1,0 +1,15 @@
+<project default="build">
+	<property name="name" value="json2xml2" />
+
+	<target name="clean">
+		<delete dir="build" />
+	</target>
+
+	<target name="build" depends="clean">
+		<mkdir dir="build" />
+		<zip zipfile="build/${name}.zip">
+			<fileset excludes="bin, build, build.xml, files/output.xml" dir="."/>
+		</zip>
+	</target>
+
+</project>
