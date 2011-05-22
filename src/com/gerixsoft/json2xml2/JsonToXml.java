@@ -2,9 +2,6 @@ package com.gerixsoft.json2xml2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
@@ -38,11 +35,9 @@ public class JsonToXml {
 			System.err.println("usage: <json-file> <xml-file>");
 			System.exit(-1);
 		}
-		json2xml(new File(args[0]), new File(args[1]));
-		System.out.println("ok");
-	}
+		File jsonFile = new File(args[0]);
+		File xmlFile = new File(args[1]);
 
-	private static void json2xml(File jsonFile, File xmlFile) throws IOException, RecognitionException, SAXException, TransformerConfigurationException {
 		CharStream stream = new ANTLRFileStream(jsonFile.toString());
 		JSONLexer lexer = new JSONLexer(stream);
 		TokenStream input = new CommonTokenStream(lexer);
@@ -87,6 +82,8 @@ public class JsonToXml {
 			}
 		});
 		validator.validate(new StreamSource(xmlFile));
+
+		System.out.println("ok");
 	}
 
 	private static final class __TreeVisitorAction implements TreeVisitorAction {
