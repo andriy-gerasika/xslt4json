@@ -2,7 +2,6 @@ package com.gerixsoft.json2xml2;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -34,7 +33,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class JsonToXml {
 
-	public static void main(String[] args) throws IOException, RecognitionException, SAXException, TransformerConfigurationException, URISyntaxException {
+	public static void main(String[] args) throws IOException, RecognitionException, SAXException, TransformerConfigurationException {
 		if (args.length != 2) {
 			System.err.println("usage: <json-file> <xml-file>");
 			System.exit(-1);
