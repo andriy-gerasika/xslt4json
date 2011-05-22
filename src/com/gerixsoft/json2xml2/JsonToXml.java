@@ -60,27 +60,7 @@ public class JsonToXml {
 		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 		Schema schema = factory.newSchema(new StreamSource(JsonToXml.class.getResourceAsStream("json.xsd")));
 		Validator validator = schema.newValidator();
-		validator.setErrorHandler(new ErrorHandler() {
-			@Override
-			public void warning(SAXParseException exception) throws SAXException {
-				log("warning", exception);
-			}
-
-			@Override
-			public void fatalError(SAXParseException exception) throws SAXException {
-				log("fatal error", exception);
-			}
-
-			@Override
-			public void error(SAXParseException exception) throws SAXException {
-				log("error", exception);
-			}
-
-			public void log(String type, SAXParseException exception) {
-				System.err.println(type + " at line: " + exception.getLineNumber() + " col:" + exception.getColumnNumber() + " message: "
-						+ exception.getMessage());
-			}
-		});
+		validator.setErrorHandler(new __ErrorHandler());
 		validator.validate(new StreamSource(xmlFile));
 
 		System.out.println("ok");
@@ -141,4 +121,27 @@ public class JsonToXml {
 		}
 		
 	}
+
+	private static final class __ErrorHandler implements ErrorHandler {
+		@Override
+		public void warning(SAXParseException exception) throws SAXException {
+			log("warning", exception);
+		}
+
+		@Override
+		public void fatalError(SAXParseException exception) throws SAXException {
+			log("fatal error", exception);
+		}
+
+		@Override
+		public void error(SAXParseException exception) throws SAXException {
+			log("error", exception);
+		}
+
+		public void log(String type, SAXParseException exception) {
+			System.err.println(type + " at line: " + exception.getLineNumber() + " col:" + exception.getColumnNumber() + " message: "
+					+ exception.getMessage());
+		}
+	}
+
 }
