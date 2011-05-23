@@ -70,7 +70,7 @@ fragment StringChar :  UnicodeChar | EscapeSequence;
 
 fragment EscapeSequence
 	: '\\' 
-	  ('\"' {setText("\"");}
+	  ('\"' //{setText("\"");} // TODO: uncomment this line and it will turn off syntax highlighting, must rewrite w/ alternative variant
 	  |'\\' {setText("\\");}
 	  | '/' {setText("/");}
 	  | 'b' {setText("\b");}
@@ -78,7 +78,7 @@ fragment EscapeSequence
 	  | 'n' {setText("\n");}
 	  | 'r' {setText("\r");}
 	  | 't' {setText("\t");}
-	  | 'u' HexDigit HexDigit HexDigit HexDigit //i=HexDigit j=HexDigit k=HexDigit l=HexDigit {setText(ParserUtil.hexToChar(i.getText(),j.getText(),k.getText(),l.getText()));}
+	  | 'u' HexDigit HexDigit HexDigit HexDigit //i=HexDigit j=HexDigit k=HexDigit l=HexDigit {setText(ParserUtil.hexToChar(i.getText(),j.getText(),k.getText(),l.getText()));} // ParserUtil is not defined
 	  )
 	;
 
