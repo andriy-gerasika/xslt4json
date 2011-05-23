@@ -69,7 +69,17 @@ fragment UnicodeChar: ~('"'| '\\');
 fragment StringChar :  UnicodeChar | EscapeSequence;
 
 fragment EscapeSequence
-	: '\\' ('\"' | '\\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' HexDigit HexDigit HexDigit HexDigit)
+	: '\\' 
+	  ('\"' {setText("\"");}
+	  |'\\' {setText("\\");}
+	  | '/' {setText("/");}
+	  | 'b' {setText("\b");}
+	  | 'f' {setText("\f");}
+	  | 'n' {setText("\n");}
+	  | 'r' {setText("\r");}
+	  | 't' {setText("\t");}
+	  | 'u' HexDigit HexDigit HexDigit HexDigit //i=HexDigit j=HexDigit k=HexDigit l=HexDigit {setText(ParserUtil.hexToChar(i.getText(),j.getText(),k.getText(),l.getText()));}
+	  )
 	;
 
 fragment Int: '-'? ('0' | '1'..'9' Digit*);
@@ -78,7 +88,7 @@ fragment Exp: ('e' | 'E') ('+' | '-')? Digit+;
 
 WhiteSpace: (' ' | '\r' | '\t' | '\u000C' | '\n') { $channel=HIDDEN; };
 
-String: '"' StringChar* '"';
+String @init{StringBuilder sb = new StringBuilder();} : '"' (c=StringChar {sb.append(c.getText());})* '"' {setText(sb.toString());};
 Integer: Int;
 Double:  Int (Frac Exp? | Exp);
 Boolean: 'false' | 'true';

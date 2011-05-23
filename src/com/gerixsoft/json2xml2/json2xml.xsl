@@ -10,12 +10,8 @@
 
 	<xsl:template match="element/node()[1][name()='']">
 		<xsl:attribute name="name">
-			<xsl:value-of select="substring(., 2, string-length(.)-2)" />
+			<xsl:value-of select="." />
 		</xsl:attribute>
-	</xsl:template>
-
-	<xsl:template match="string/text()">
-		<xsl:value-of select="substring(., 2, string-length(.)-2)" />
 	</xsl:template>
 
 </xsl:stylesheet>

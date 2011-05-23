@@ -3,11 +3,7 @@
 <stx:transform version="1.0" xmlns:stx="http://stx.sourceforge.net/2002/ns" pass-through="all">
 
 	<stx:template match="element/node()[1]"> <!-- [name()=''] -->
-		<stx:attribute name="name" select="substring(., 2, string-length(.) - 2)" />
-	</stx:template>
-
-	<stx:template match="string/text()">
-		<stx:value-of select="substring(., 2, string-length(.)-2)" />
+		<stx:attribute name="name" select="." />
 	</stx:template>
 
 </stx:transform>
