@@ -86,13 +86,17 @@ public class JsonToXml {
 			Token token = tree.getToken();
 			String text = token.getText();
 			int type = token.getType();
-			String name = JSONParser.tokenNames[type];
 			try {
-				if (name.equals(name.toUpperCase())) {
+				if (type == JSONParser.XML_ELEMENT) {
 					handler.startElement("", text, text, new AttributesImpl());
 				} else {
-					//handler.processingInstruction("antlr", text);
-					handler.characters(text.toCharArray(), 0, text.length());
+					String name = JSONParser.tokenNames[type];
+					if (name.equals(name.toUpperCase())) {
+						handler.startElement("", name, name, new AttributesImpl());
+					} else {
+						//handler.processingInstruction("antlr", text);
+						handler.characters(text.toCharArray(), 0, text.length());
+					}
 				}
 			} catch (SAXException e) {
 				e.printStackTrace();
@@ -107,10 +111,14 @@ public class JsonToXml {
 			String text = token.getText();
 			int type = token.getType();
 			try {
-				String name = JSONParser.tokenNames[type];
-				if (name.equals(name.toUpperCase())) {
+				if (type == JSONParser.XML_ELEMENT) {
 					handler.endElement("", text, text);
 				} else {
+					String name = JSONParser.tokenNames[type];
+					if (name.equals(name.toUpperCase())) {
+						handler.endElement("", name, name);
+					} else {
+					}
 				}
 			} catch (SAXException e) {
 				e.printStackTrace();

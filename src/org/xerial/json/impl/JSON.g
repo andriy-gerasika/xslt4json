@@ -32,14 +32,7 @@ options
    
 tokens
 {
-	JSON;
-	OBJECT;
-	ELEMENT;
-	ARRAY;
-	STRING;
-	INTEGER;
-	DOUBLE;
-	BOOLEAN;
+	XML_ELEMENT;
 }
 
 @lexer::header
@@ -92,30 +85,30 @@ Boolean: 'false' | 'true';
 
 // parser rules
 json
-	: value -> ^(JSON value)
+	: value -> ^(XML_ELEMENT["json"] value)
 	;
 
 object
 	: '{' (element (',' element)*)? '}'
-	  -> ^(OBJECT element*)
+	  -> ^(XML_ELEMENT["object"] element*)
 	;
 	
 element
 	: String ':' value
-	  -> ^(ELEMENT String value)
+	  -> ^(XML_ELEMENT["element"] String value)
 	;	
 	
 array
 	: '[' value (',' value)* ']'
-	  -> ^(ARRAY value+)
+	  -> ^(XML_ELEMENT["array"] value+)
 	;
 
 	
 value
-	: String -> ^(STRING String)
-	| Integer -> ^(INTEGER Integer)
-	| Double -> ^(DOUBLE Double)
-	| Boolean -> ^(BOOLEAN Boolean)
+	: String -> ^(XML_ELEMENT["string"] String)
+	| Integer -> ^(XML_ELEMENT["integer"] Integer)
+	| Double -> ^(XML_ELEMENT["double"] Double)
+	| Boolean -> ^(XML_ELEMENT["boolean"] Boolean)
 	| object  
 	| array  
 	| NULL
