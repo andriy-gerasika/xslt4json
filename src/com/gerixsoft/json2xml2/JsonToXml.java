@@ -62,48 +62,48 @@ public class JsonToXml {
 		System.out.println("ok");
 	}
 
-		private static void visit(ContentHandler handler, Tree tree) {
-			String text = tree.getText();
-			int type = tree.getType();
-			try {
-				if (type == JSONParser.XML_ELEMENT) {
-					AttributesImpl attrs = new AttributesImpl();
-					int i = 0;
-					for (; i < tree.getChildCount(); i++) {
-						Tree attr = tree.getChild(i);
-						if (attr.getType() != JSONParser.XML_ATTRIBUTE) {
-							break;
-						}
-						String attrName = attr.getText();
-						StringBuilder attrValue = new StringBuilder();
-						for (int j = 0; j < attr.getChildCount(); j++) {
-							Tree value = attr.getChild(j);
-							attrValue.append(value.getText());
-						}
-						attrs.addAttribute("", attrName, attrName, "CDATA", attrValue.toString());
+	private static void visit(ContentHandler handler, Tree tree) {
+		String text = tree.getText();
+		int type = tree.getType();
+		try {
+			if (type == JSONParser.XML_ELEMENT) {
+				AttributesImpl attrs = new AttributesImpl();
+				int i = 0;
+				for (; i < tree.getChildCount(); i++) {
+					Tree attr = tree.getChild(i);
+					if (attr.getType() != JSONParser.XML_ATTRIBUTE) {
+						break;
 					}
-					handler.startElement("", text, text, attrs);
-					for (; i < tree.getChildCount(); i++) {
+					String attrName = attr.getText();
+					StringBuilder attrValue = new StringBuilder();
+					for (int j = 0; j < attr.getChildCount(); j++) {
+						Tree value = attr.getChild(j);
+						attrValue.append(value.getText());
+					}
+					attrs.addAttribute("", attrName, attrName, "CDATA", attrValue.toString());
+				}
+				handler.startElement("", text, text, attrs);
+				for (; i < tree.getChildCount(); i++) {
+					visit(handler, tree.getChild(i));
+				}
+				handler.endElement("", text, text);
+			} else {
+				String name = JSONParser.tokenNames[type];
+				if (name.equals(name.toUpperCase())) {
+					handler.startElement("", name, name, new AttributesImpl());
+					for (int i = 0; i < tree.getChildCount(); i++) {
 						visit(handler, tree.getChild(i));
 					}
-					handler.endElement("", text, text);
+					handler.endElement("", name, name);
 				} else {
-					String name = JSONParser.tokenNames[type];
-					if (name.equals(name.toUpperCase())) {
-						handler.startElement("", name, name, new AttributesImpl());
-						for (int i = 0; i < tree.getChildCount(); i++) {
-							visit(handler, tree.getChild(i));
-						}
-						handler.endElement("", name, name);
-					} else {
-						//handler.processingInstruction("antlr", text);
-						handler.characters(text.toCharArray(), 0, text.length());
-					}
+					// handler.processingInstruction("antlr", text);
+					handler.characters(text.toCharArray(), 0, text.length());
 				}
-			} catch (SAXException e) {
-				e.printStackTrace();
 			}
+		} catch (SAXException e) {
+			e.printStackTrace();
 		}
+	}
 
 	private static final class __ErrorHandler implements ErrorHandler {
 		@Override
