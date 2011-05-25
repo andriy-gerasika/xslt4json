@@ -50,8 +50,8 @@ public class JsonToXml {
 		handler.setResult(new StreamResult(xmlFile));
 		handler.startDocument();
 		try {
-			TreeVisitor visitor = new TreeVisitor();
-			visitor.visit(tree, new __TreeVisitorAction(handler));
+			__TreeVisitor visitor = new __TreeVisitor(handler);
+			visitor.visit(tree);
 		} finally {
 			handler.endDocument();
 		}
@@ -65,22 +65,21 @@ public class JsonToXml {
 		System.out.println("ok");
 	}
 
-	private static final class __TreeVisitorAction implements TreeVisitorAction {
+	private static final class __TreeVisitor {
 		private ContentHandler handler;
 
-		public __TreeVisitorAction(ContentHandler handler) {
+		public __TreeVisitor(ContentHandler handler) {
 			this.handler = handler;
 		}
 
-		@Override
-		public Object pre(Object o) {
-			Tree tree = (Tree) o;
+		public void visit(Tree tree) {
 			String text = tree.getText();
 			int type = tree.getType();
 			try {
 				if (type == JSONParser.XML_ELEMENT) {
 					AttributesImpl attrs = new AttributesImpl();
-					for (int i = 0; i < tree.getChildCount(); i++) {
+					int i = 0;
+					for (; i < tree.getChildCount(); i++) {
 						Tree attr = tree.getChild(i);
 						if (attr.getType() != JSONParser.XML_ATTRIBUTE) {
 							break;
@@ -92,14 +91,20 @@ public class JsonToXml {
 							attrValue.append(value.getText());
 						}
 						attrs.addAttribute("", attrName, attrName, "CDATA", attrValue.toString());
-						((CommonTree) tree).deleteChild(i--); // remove attribute
-						// TODO: ContentHandler must be enhanced w/ ignore
 					}
 					handler.startElement("", text, text, attrs);
+					for (; i < tree.getChildCount(); i++) {
+						visit(tree.getChild(i));
+					}
+					handler.endElement("", text, text);
 				} else {
 					String name = JSONParser.tokenNames[type];
 					if (name.equals(name.toUpperCase())) {
 						handler.startElement("", name, name, new AttributesImpl());
+						for (int i = 0; i < tree.getChildCount(); i++) {
+							visit(tree.getChild(i));
+						}
+						handler.endElement("", name, name);
 					} else {
 						//handler.processingInstruction("antlr", text);
 						handler.characters(text.toCharArray(), 0, text.length());
@@ -108,27 +113,6 @@ public class JsonToXml {
 			} catch (SAXException e) {
 				e.printStackTrace();
 			}
-			return o;
-		}
-
-		@Override
-		public Object post(Object o) {
-			Tree tree = (Tree) o;
-			String text = tree.getText();
-			int type = tree.getType();
-			try {
-				if (type == JSONParser.XML_ELEMENT) {
-					handler.endElement("", text, text);
-				} else {
-					String name = JSONParser.tokenNames[type];
-					if (name.equals(name.toUpperCase())) {
-						handler.endElement("", name, name);
-					}
-				}
-			} catch (SAXException e) {
-				e.printStackTrace();
-			}
-			return o;
 		}
 
 	}
