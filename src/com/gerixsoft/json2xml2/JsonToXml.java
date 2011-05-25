@@ -19,8 +19,6 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
-import org.antlr.runtime.tree.TreeVisitor;
-import org.antlr.runtime.tree.TreeVisitorAction;
 import org.xerial.json.impl.JSONLexer;
 import org.xerial.json.impl.JSONParser;
 import org.xml.sax.ContentHandler;
@@ -50,8 +48,7 @@ public class JsonToXml {
 		handler.setResult(new StreamResult(xmlFile));
 		handler.startDocument();
 		try {
-			__TreeVisitor visitor = new __TreeVisitor(handler);
-			visitor.visit(tree);
+			visit(handler, tree);
 		} finally {
 			handler.endDocument();
 		}
@@ -65,14 +62,7 @@ public class JsonToXml {
 		System.out.println("ok");
 	}
 
-	private static final class __TreeVisitor {
-		private ContentHandler handler;
-
-		public __TreeVisitor(ContentHandler handler) {
-			this.handler = handler;
-		}
-
-		public void visit(Tree tree) {
+		private static void visit(ContentHandler handler, Tree tree) {
 			String text = tree.getText();
 			int type = tree.getType();
 			try {
@@ -94,7 +84,7 @@ public class JsonToXml {
 					}
 					handler.startElement("", text, text, attrs);
 					for (; i < tree.getChildCount(); i++) {
-						visit(tree.getChild(i));
+						visit(handler, tree.getChild(i));
 					}
 					handler.endElement("", text, text);
 				} else {
@@ -102,7 +92,7 @@ public class JsonToXml {
 					if (name.equals(name.toUpperCase())) {
 						handler.startElement("", name, name, new AttributesImpl());
 						for (int i = 0; i < tree.getChildCount(); i++) {
-							visit(tree.getChild(i));
+							visit(handler, tree.getChild(i));
 						}
 						handler.endElement("", name, name);
 					} else {
@@ -114,8 +104,6 @@ public class JsonToXml {
 				e.printStackTrace();
 			}
 		}
-
-	}
 
 	private static final class __ErrorHandler implements ErrorHandler {
 		@Override
