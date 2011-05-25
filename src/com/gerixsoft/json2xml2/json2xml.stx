@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<stx:transform version="1.0" xmlns:stx="http://stx.sourceforge.net/2002/ns" pass-through="all">
-
-	<stx:template match="element/node()[1]"> <!-- [name()=''] -->
-		<stx:attribute name="name" select="." />
-	</stx:template>
-
-</stx:transform>

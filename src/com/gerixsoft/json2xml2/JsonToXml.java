@@ -12,15 +12,13 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import net.sf.joost.trax.TransformerFactoryImpl;
-
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.TreeVisitor;
 import org.antlr.runtime.tree.TreeVisitorAction;
 import org.xerial.json.impl.JSONLexer;
@@ -47,14 +45,8 @@ public class JsonToXml {
 		JSONParser parser = new JSONParser(input);
 		CommonTree tree = (CommonTree) parser.json().getTree();
 
-		TransformerHandler handler;
-		if (false) {
-			SAXTransformerFactory handlerFactory = new TransformerFactoryImpl();
-			handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResourceAsStream("json2xml.stx")));
-		} else {
-			SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-			handler = handlerFactory.newTransformerHandler(new StreamSource(JsonToXml.class.getResourceAsStream("json2xml.xsl")));
-		}
+		SAXTransformerFactory handlerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+		TransformerHandler handler = handlerFactory.newTransformerHandler();
 		handler.setResult(new StreamResult(xmlFile));
 		handler.startDocument();
 		try {
@@ -82,13 +74,28 @@ public class JsonToXml {
 
 		@Override
 		public Object pre(Object o) {
-			CommonTree tree = (CommonTree) o;
-			Token token = tree.getToken();
-			String text = token.getText();
-			int type = token.getType();
+			Tree tree = (Tree) o;
+			String text = tree.getText();
+			int type = tree.getType();
 			try {
 				if (type == JSONParser.XML_ELEMENT) {
-					handler.startElement("", text, text, new AttributesImpl());
+					AttributesImpl attrs = new AttributesImpl();
+					for (int i = 0; i < tree.getChildCount(); i++) {
+						Tree attr = tree.getChild(i);
+						if (attr.getType() != JSONParser.XML_ATTRIBUTE) {
+							break;
+						}
+						String attrName = attr.getText();
+						StringBuilder attrValue = new StringBuilder();
+						for (int j = 0; j < attr.getChildCount(); j++) {
+							Tree value = attr.getChild(j);
+							attrValue.append(value.getText());
+						}
+						attrs.addAttribute("", attrName, attrName, "CDATA", attrValue.toString());
+						((CommonTree) tree).deleteChild(i--); // remove attribute
+						// TODO: ContentHandler must be enhanced w/ ignore
+					}
+					handler.startElement("", text, text, attrs);
 				} else {
 					String name = JSONParser.tokenNames[type];
 					if (name.equals(name.toUpperCase())) {
@@ -106,10 +113,9 @@ public class JsonToXml {
 
 		@Override
 		public Object post(Object o) {
-			CommonTree tree = (CommonTree) o;
-			Token token = tree.getToken();
-			String text = token.getText();
-			int type = token.getType();
+			Tree tree = (Tree) o;
+			String text = tree.getText();
+			int type = tree.getType();
 			try {
 				if (type == JSONParser.XML_ELEMENT) {
 					handler.endElement("", text, text);
@@ -117,7 +123,6 @@ public class JsonToXml {
 					String name = JSONParser.tokenNames[type];
 					if (name.equals(name.toUpperCase())) {
 						handler.endElement("", name, name);
-					} else {
 					}
 				}
 			} catch (SAXException e) {

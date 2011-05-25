@@ -33,6 +33,7 @@ options
 tokens
 {
 	XML_ELEMENT;
+	XML_ATTRIBUTE;
 }
 
 @lexer::header
@@ -105,7 +106,7 @@ object
 	
 element
 	: String ':' value
-	  -> ^(XML_ELEMENT["element"] String value)
+	  -> ^(XML_ELEMENT["element"] ^(XML_ATTRIBUTE["name"] String) value)
 	;	
 	
 array
