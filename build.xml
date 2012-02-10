@@ -1,5 +1,5 @@
 <project default="build">
-	<property name="name" value="json2xml2" />
+	<property name="name" value="xslt4json" />
 
 	<target name="clean">
 		<delete dir="build" />

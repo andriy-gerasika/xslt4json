@@ -1,4 +1,4 @@
-package com.gerixsoft.json2xml2;
+package com.gerixsoft.xslt4json;
 
 import java.io.File;
 import java.io.IOException;
