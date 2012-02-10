@@ -8,7 +8,7 @@
 	<target name="build" depends="clean">
 		<mkdir dir="build" />
 		<zip zipfile="build/${name}.zip">
-			<fileset excludes="bin, build, build.xml, files/output.xml" dir="."/>
+			<fileset excludes="bin, build, build.xml, files/output.json" dir="."/>
 		</zip>
 	</target>
 
