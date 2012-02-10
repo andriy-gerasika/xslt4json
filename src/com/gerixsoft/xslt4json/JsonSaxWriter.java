@@ -8,7 +8,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-public class JsonSaxSerializer implements ContentHandler {
+public class JsonSaxWriter implements ContentHandler {
 
 	private OutputStream outputStream;
 	
@@ -20,7 +20,7 @@ public class JsonSaxSerializer implements ContentHandler {
 		}
 	}
 	
-	public JsonSaxSerializer(OutputStream outputStream) {
+	public JsonSaxWriter(OutputStream outputStream) {
 		this.outputStream = outputStream;
 	}
 	

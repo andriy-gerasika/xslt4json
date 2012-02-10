@@ -29,7 +29,7 @@ public class JsonToXml {
 		File inputFile = new File(args[0]);
 		File outputFile = new File(args[1]);
 
-		JsonSaxSerializer writer = new JsonSaxSerializer(new FileOutputStream(outputFile));
+		JsonSaxWriter writer = new JsonSaxWriter(new FileOutputStream(outputFile));
 		
 		SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 		Schema schema = schemaFactory.newSchema(new StreamSource(JsonToXml.class
@@ -41,7 +41,7 @@ public class JsonToXml {
 		TransformerHandler transformerHandler = ((SAXTransformerFactory)TransformerFactory.newInstance()).newTransformerHandler();
 		transformerHandler.setResult(new SAXResult(validatorHandler));
 		
-		JsonSaxParser reader = new JsonSaxParser();
+		JsonSaxReader reader = new JsonSaxReader();
 		reader.setContentHandler(transformerHandler);
 		reader.parse(new InputSource(inputFile.toString()));
 		

@@ -21,7 +21,7 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
 
-public class JsonSaxParser implements XMLReader {
+public class JsonSaxReader implements XMLReader {
 
 	@Override
 	public void parse(InputSource input) throws IOException, SAXException {
