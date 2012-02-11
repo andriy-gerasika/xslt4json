@@ -2,15 +2,6 @@
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xs:element name="json">
-		<xs:complexType>
-			<xs:choice>
-				<xs:element ref="array"/>
-				<xs:element ref="object"/>
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
-
 	<xs:element name="array">
 		<xs:complexType>
 			<xs:choice minOccurs="0" maxOccurs="unbounded">

@@ -96,7 +96,7 @@ Boolean: 'false' | 'true';
 
 // parser rules
 json
-	: value -> ^(XML_ELEMENT["json"] value)
+	: value
 	;
 
 object

@@ -22,12 +22,13 @@ import org.xml.sax.SAXParseException;
 public class JsonToXml {
 
 	public static void main(String[] args) throws IOException, SAXException, TransformerException {
-		if (args.length != 2) {
-			System.err.println("usage: <input-file> <output-file>");
+		if (args.length != 3) {
+			System.err.println("usage: <xslt-file> <input-file> <output-file>");
 			System.exit(-1);
 		}
-		File inputFile = new File(args[0]);
-		File outputFile = new File(args[1]);
+		File xsltFile = new File(args[0]);
+		File inputFile = new File(args[1]);
+		File outputFile = new File(args[2]);
 
 		JsonSaxWriter writer = new JsonSaxWriter(new FileOutputStream(outputFile));
 		
@@ -38,7 +39,7 @@ public class JsonToXml {
 		validatorHandler.setErrorHandler(new __ErrorHandler());
 		validatorHandler.setContentHandler(writer);
 		
-		TransformerHandler transformerHandler = ((SAXTransformerFactory)TransformerFactory.newInstance()).newTransformerHandler();
+		TransformerHandler transformerHandler = ((SAXTransformerFactory)TransformerFactory.newInstance()).newTransformerHandler(new StreamSource(xsltFile));
 		transformerHandler.setResult(new SAXResult(validatorHandler));
 		
 		JsonSaxReader reader = new JsonSaxReader();

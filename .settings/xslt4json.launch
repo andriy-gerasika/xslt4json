@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.gerixsoft.xslt4json.JsonToXml"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="files/input.json&#10;files/output.json"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="xslt/main.xsl&#10;files/input.json&#10;files/output.json"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="xslt4json"/>
 </launchConfiguration>
