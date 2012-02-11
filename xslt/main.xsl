@@ -10,7 +10,7 @@
         </xsl:copy>
     </xsl:template>
 
-	<xsl:template match="element[@name='firstName']/string[.='John']">
+	<xsl:template match="field[@name='firstName']/string[.='John']">
 		<xsl:copy>
 			<xsl:apply-templates select="@*"/>
 			<xsl:text>Peter</xsl:text>

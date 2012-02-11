@@ -76,11 +76,11 @@ public class JsonSaxWriter implements ContentHandler {
 				writeln();
 				needsComma = false;
 			}
-			if (localName.equals("element")) {
+			if (localName.equals("field")) {
 				if (atts.getLength() == 1 && atts.getQName(0).equals("name")) {
 					write("\"" + atts.getValue(0) + "\": ");
 				} else {
-					throw new SAXException("element 'element' must have only one name attribute");
+					throw new SAXException("element 'field' must have only one name attribute");
 				}
 			} else {
 				if (atts.getLength() != 0) {
@@ -119,7 +119,7 @@ public class JsonSaxWriter implements ContentHandler {
 				indentLevel--;
 				writeln();
 				write("]");
-			} else if (localName.equals("element")) {
+			} else if (localName.equals("field")) {
 			} else if (localName.equals("string")) {
 				write("\"");
 			} else if (localName.equals("integer") || localName.equals("double")

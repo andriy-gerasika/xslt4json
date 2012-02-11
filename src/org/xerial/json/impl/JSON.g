@@ -100,13 +100,13 @@ json
 	;
 
 object
-	: '{' (element (',' element)*)? '}'
-	  -> ^(XML_ELEMENT["object"] element*)
+	: '{' (field (',' field)*)? '}'
+	  -> ^(XML_ELEMENT["object"] field*)
 	;
 	
-element
+field
 	: String ':' value
-	  -> ^(XML_ELEMENT["element"] ^(XML_ATTRIBUTE["name"] String) value)
+	  -> ^(XML_ELEMENT["field"] ^(XML_ATTRIBUTE["name"] String) value)
 	;	
 	
 array
