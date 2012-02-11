@@ -19,7 +19,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-public class JsonToXml {
+public class Test {
 
 	public static void main(String[] args) throws IOException, SAXException, TransformerException {
 		if (args.length != 3) {
@@ -33,7 +33,7 @@ public class JsonToXml {
 		JsonSaxWriter writer = new JsonSaxWriter(new FileOutputStream(outputFile));
 		
 		SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-		Schema schema = schemaFactory.newSchema(new StreamSource(JsonToXml.class
+		Schema schema = schemaFactory.newSchema(new StreamSource(Test.class
 				.getResourceAsStream("json.xsd")));
 		ValidatorHandler validatorHandler = schema.newValidatorHandler();
 		validatorHandler.setErrorHandler(new __ErrorHandler());
