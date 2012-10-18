@@ -1,15 +1,41 @@
-<project default="build">
-	<property name="name" value="xslt4json" />
+<project name="xslt4json" default="main">
+	<property name="main-class" value="com.gerixsoft.xslt4json.Test" />
+
+	<path id="classpath">
+		<fileset dir="lib" includes="**/*.jar" />
+	</path>
 
 	<target name="clean">
 		<delete dir="build" />
 	</target>
 
-	<target name="build" depends="clean">
-		<mkdir dir="build" />
-		<zip zipfile="build/${name}.zip">
-			<fileset excludes="bin, build, build.xml, files/output.json" dir="."/>
-		</zip>
+	<target name="compile">
+		<mkdir dir="build/classes" />
+		<javac srcdir="src" destdir="build/classes" classpathref="classpath" />
+		<copy todir="build/classes">
+			<fileset dir="src" includes="**/*.xsd" />
+		</copy>
 	</target>
 
+	<target name="jar" depends="compile">
+		<jar destfile="build/${ant.project.name}.jar" basedir="build/classes">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="test" depends="jar">
+		<java fork="true" classname="${main-class}">
+			<classpath>
+				<path refid="classpath" />
+				<path location="build/${ant.project.name}.jar" />
+			</classpath>
+			<arg file="xslt/main.xsl" />
+			<arg file="files/input.json" />
+			<arg file="files/output.json" />
+		</java>
+	</target>
+
+	<target name="main" depends="clean,test" />
 </project>
